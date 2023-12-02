@@ -1,3 +1,8 @@
+builtin = {
+  dap = {
+    active = false
+  }
+}
 -- All plugins have lazy=true by default,to load a plugin on startup just lazy=false
 -- List of all default plugins & their definitions
 local default_plugins = {
@@ -25,7 +30,33 @@ local default_plugins = {
     end,
     config = function(_, opts)
       require "base46.term"
-      require("nvterm").setup(opts)
+      -- require("nvterm").setup(opts)
+      require("nvterm").setup({
+        terminals = {
+          shell = vim.o.shell,
+          list = {},
+          type_opts = {
+            float = {
+              relative = 'editor',
+              row = 0.05,
+              col = 0.05,
+              width = 0.9,
+              height = 0.85,
+              border = "single",
+            },
+            horizontal = { location = "rightbelow", split_ratio = .3, },
+            vertical = { location = "rightbelow", split_ratio = .5 },
+          }
+        },
+        behavior = {
+          autoclose_on_quit = {
+            enabled = true,
+            confirm = true,
+          },
+          close_on_exit = true,
+          auto_insert = true,
+        },
+      })
     end,
   },
 
@@ -260,6 +291,8 @@ local default_plugins = {
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "whichkey")
       require("which-key").setup(opts)
+      local custmap = require("custom.mappings")
+      require("which-key").register(custmap.mappings, custmap.opts)
     end,
   },
 }

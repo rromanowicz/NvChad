@@ -27,7 +27,7 @@ M.general = {
     ["<C-s>"] = { "<cmd> w <CR>", "Save file" },
 
     -- Copy all
-    ["<C-c>"] = { "<cmd> %y+ <CR>", "Copy whole file" },
+    -- ["<C-c>"] = { "<cmd> %y+ <CR>", "Copy whole file" },
 
     -- line numbers
     ["<leader>n"] = { "<cmd> set nu! <CR>", "Toggle line number" },
@@ -79,14 +79,14 @@ M.tabufline = {
 
   n = {
     -- cycle through buffers
-    ["<tab>"] = {
+    ["<C-tab>"] = {
       function()
         require("nvchad.tabufline").tabuflineNext()
       end,
       "Goto next buffer",
     },
 
-    ["<S-tab>"] = {
+    ["<C-S-tab>"] = {
       function()
         require("nvchad.tabufline").tabuflinePrev()
       end,
@@ -317,6 +317,10 @@ M.nvterm = {
       end,
       "Toggle vertical term",
     },
+    ["<C-h>"] = { "<C-\\><C-n><C-w>h", "Window left" },
+    ["<C-l>"] = { "<C-\\><C-n><C-w>l", "Window right" },
+    ["<C-j>"] = { "<C-\\><C-n><C-w>j", "Window down" },
+    ["<C-k>"] = { "<C-\\><C-n><C-w>k", "Window up" },
   },
 
   n = {
@@ -406,62 +410,62 @@ M.gitsigns = {
 
   n = {
     -- Navigation through hunks
-    ["]c"] = {
-      function()
-        if vim.wo.diff then
-          return "]c"
-        end
-        vim.schedule(function()
-          require("gitsigns").next_hunk()
-        end)
-        return "<Ignore>"
-      end,
-      "Jump to next hunk",
-      opts = { expr = true },
-    },
-
-    ["[c"] = {
-      function()
-        if vim.wo.diff then
-          return "[c"
-        end
-        vim.schedule(function()
-          require("gitsigns").prev_hunk()
-        end)
-        return "<Ignore>"
-      end,
-      "Jump to prev hunk",
-      opts = { expr = true },
-    },
-
-    -- Actions
-    ["<leader>rh"] = {
-      function()
-        require("gitsigns").reset_hunk()
-      end,
-      "Reset hunk",
-    },
-
-    ["<leader>ph"] = {
-      function()
-        require("gitsigns").preview_hunk()
-      end,
-      "Preview hunk",
-    },
-
-    ["<leader>gb"] = {
-      function()
-        package.loaded.gitsigns.blame_line()
-      end,
-      "Blame line",
-    },
-
-    ["<leader>td"] = {
-      function()
-        require("gitsigns").toggle_deleted()
-      end,
-      "Toggle deleted",
-    },
+    -- ["]c"] = {
+  --     function()
+  --       if vim.wo.diff then
+  --         return "]c"
+  --       end
+  --       vim.schedule(function()
+  --         require("gitsigns").next_hunk()
+  --       end)
+  --       return "<Ignore>"
+  --     end,
+  --     "Jump to next hunk",
+  --     opts = { expr = true },
+  --   },
+  --
+  --   ["[c"] = {
+  --     function()
+  --       if vim.wo.diff then
+  --         return "[c"
+  --       end
+  --       vim.schedule(function()
+  --         require("gitsigns").prev_hunk()
+  --       end)
+  --       return "<Ignore>"
+  --     end,
+  --     "Jump to prev hunk",
+  --     opts = { expr = true },
+  --   },
+  --
+  --   -- Actions
+  --   ["<leader>rh"] = {
+  --     function()
+  --       require("gitsigns").reset_hunk()
+  --     end,
+  --     "Reset hunk",
+  --   },
+  --
+  --   ["<leader>ph"] = {
+  --     function()
+  --       require("gitsigns").preview_hunk()
+  --     end,
+  --     "Preview hunk",
+  --   },
+  --
+  --   ["<leader>gb"] = {
+  --     function()
+  --       package.loaded.gitsigns.blame_line()
+  --     end,
+  --     "Blame line",
+  --   },
+  --
+  --   ["<leader>td"] = {
+  --     function()
+  --       require("gitsigns").toggle_deleted()
+  --     end,
+  --     "Toggle deleted",
+  --   },
   },
 }
 

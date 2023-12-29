@@ -76,10 +76,6 @@ local config = {
             name = "JavaSE-19",
             path = "~/.jdk/jdk-19.0.2",
           },
-          {
-            name = "JavaSE-11",
-            path = "~/.jdk/amazon-corretto-11.0.16.8.1-linux-x64",
-          },
         },
       },
       maven = {

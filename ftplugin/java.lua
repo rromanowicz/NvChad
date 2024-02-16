@@ -3,11 +3,9 @@ if not status then
   return
 end
 
-
 local function find_root(items)
   return require("jdtls.setup").find_root { items }
 end
-
 
 
 -- -- Setup Workspace
@@ -26,6 +24,8 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 local extendedClientCapabilities = jdtls.extendedClientCapabilities
 extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
+local rootDir = find_root { ".git", "mvnw", "gradlew" }
+local moduleRootDir = find_root { "pom.xml", "build.gradle" }
 
 -- Setup Testing and Debugging
 local bundles = {}
@@ -56,46 +56,46 @@ local config = {
     "-configuration", home .. "/.local/share/nvim/mason/packages/jdtls/config_" .. os_config,
     "-data", workspace_dir,
   },
-  root_dir = require("jdtls.setup").find_root { ".git", "mvnw", "gradlew" },
-  module_root_dir = require("jdtls.setup").find_root { "pom.xml", "build.gradle" },
+  root_dir = rootDir,
+  module_root_dir = moduleRootDir,
   capabilities = capabilities,
 
   settings = {
     java = {
       eclipse = {
-        downloadSources = true,
+        downloadsources = true,
       },
       configuration = {
-        updateBuildConfiguration = "interactive",
+        updatebuildconfiguration = "interactive",
         runtimes = {
           {
-            name = "JavaSE-21",
+            name = "javase-21",
             path = "~/.jdk/jdk-21",
           },
-          {
-            name = "JavaSE-19",
-            path = "~/.jdk/jdk-19.0.2",
-          },
+          -- {
+          --   name = "javase-19",
+          --   path = "~/.jdk/jdk-19.0.2",
+          -- },
         },
       },
       maven = {
-        downloadSources = true,
+        downloadsources = true,
       },
-      implementationsCodeLens = {
+      implementationscodelens = {
         enabled = true,
       },
-      referencesCodeLens = {
+      referencescodelens = {
         enabled = true,
       },
       references = {
-        includeDecompiledSources = true,
+        includedecompiledsources = true,
       },
       format = {
         enabled = false,
       },
     },
-    signatureHelp = { enabled = true },
-    extendedClientCapabilities = extendedClientCapabilities,
+    signaturehelp = { enabled = true },
+    extendedclientcapabilities = extendedClientCapabilities,
   },
   init_options = {
     bundles = bundles,
@@ -112,7 +112,7 @@ config["on_attach"] = function(client, bufnr)
   end
 end
 
-vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+vim.api.nvim_create_autocmd({ "bufwritepost" }, {
   pattern = { "*.java" },
   callback = function()
     local _, _ = pcall(vim.lsp.codelens.refresh)
@@ -128,64 +128,67 @@ null_ls.setup({
     },
 })
 
--- local formatters = require "null-ls.formatters"
--- formatters.setup {
---   { command = "google_java_format", filetypes = { "java" } },
--- }
-
 require("jdtls").start_or_attach(config)
 
 
 --------------------------------
----- MAVEN RUNNER FUNCTIONS ----
+---- maven runner functions ----
 --------------------------------
-
-function get_test_runner(test_name, debug)
-  if debug then
-    return 'mvn test -Dmaven.surefire.debug -Dtest="' .. test_name .. '"'
+local function get_working_directory()
+  local working_dir = require("jdtls.setup").find_root { "pom.xml", "build.gradle" }
+  if working_dir == nil then
+    return ""
+  else
+    return "cd " .. working_dir .. " && "
   end
-  return 'mvn test -Dtest="' .. test_name .. '"'
 end
 
-function run_java_test_method(debug)
+local function get_test_runner(test_name, debug)
+  if debug then
+    return 'mvn test -dmaven.surefire.debug -dtest="' .. test_name .. '"'
+  end
+  return 'mvn test -dtest="' .. test_name .. '"'
+end
+
+local function run_java_test_method(debug)
   local utils = require'utils'
   local method_name = utils.get_current_full_method_name("\\#")
   vim.cmd('term ' .. get_test_runner(method_name, debug))
 end
 
-function run_java_test_class(debug)
+local function run_java_test_class(debug)
   local utils = require'utils'
   local class_name = utils.get_current_full_class_name()
   vim.cmd('term ' .. get_test_runner(class_name, debug))
 end
 
-function get_spring_boot_runner(profile, debug)
+local function get_spring_boot_runner(profile, debug)
   local debug_param = ""
   if debug then
-    debug_param = ' -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005" '
-  end 
+    debug_param = ' -Dspring-boot.run.jvmarguments="-xdebug -xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"'
+  end
 
   local profile_param = ""
   if profile then
-    profile_param = " -Dspring-boot.run.profiles=" .. profile .. " "
+    profile_param = " -Dspring-boot.run.profiles=" .. profile
   end
 
   local env_vars = ""
-  local f = io.open("./envvars", "rb")
+  local f = io.open(config.root_dir .. "/.envvars", "rb")
   if f then
-    env_vars = string.format(' -Dspring-boot.run.arguments="%s"', f:read())
+    env_vars = string.format(' -Dspring-boot.run.arguments="%s"', f:read "*a")
     f:close()
   end
 
-  return 'mvn spring-boot:run ' .. env_vars .. profile_param .. debug_param
+  return get_working_directory() .. 'mvn spring-boot:run' .. env_vars .. profile_param .. debug_param
 end
 
-function run_spring_boot(debug)
-  vim.cmd('term cd ' .. config.module_root_dir .. ' && ' ..  get_spring_boot_runner(nil, debug))
+local function run_spring_boot(debug)
+  vim.cmd('term ' ..  get_spring_boot_runner(nil, debug))
 end
 
-function run_maven_cmd(mvn)
-  vim.cmd('term cd ' .. config.module_root_dir .. ' && mvn '  .. ' '.. mvn)
+local function run_maven_cmd(mvn)
+  vim.cmd('term mvn '  .. ' '.. mvn)
 end
 
 
@@ -195,9 +198,8 @@ end
 
 local keymap = vim.keymap.set
 
--- keymap("n", "<F9>", function() run_spring_boot() end)
-keymap("n", "<F9>", "<cmd>lua require('nvterm.terminal').toggle 'vertical' <cr> cd " .. config.module_root_dir .. ' && ' ..  get_spring_boot_runner(nil, debug) .. "<cr>")
-keymap("n", "<F10>", function() run_spring_boot(true) end)
+keymap("n", "<F9>", "<cmd>lua require('nvterm.terminal').toggle 'vertical' <cr> " ..  get_spring_boot_runner(nil, false) .. "<cr>")
+keymap("n", "<F10>", "<cmd>lua require('nvterm.terminal').toggle 'vertical' <cr> " ..  get_spring_boot_runner(nil, true) .. "<cr>")
 keymap('n', '<F5>', ':lua require"dap".continue()<CR>')
 keymap('n', '<F8>', ':lua require"dap".step_over()<CR>')
 keymap('n', '<F7>', ':lua require"dap".step_into()<CR>')
@@ -242,10 +244,11 @@ local mappings = {
   },
   m ={
     name = "Maven",
-    c = { function() run_maven_cmd("clean compile") end, "Compile"},
+    b = { "<cmd>lua require('nvterm.terminal').toggle 'float' <cr> mvn clean build <cr> exit <cr>", "Build"},
+    c = { "<cmd>lua require('nvterm.terminal').toggle 'float' <cr> mvn clean compile <cr> exit <cr>", "Compile"},
     r = { function() run_spring_boot() end, "Run"},
     d = { function() run_spring_boot(true) end, "Debug"},
-    i = { function() run_maven_cmd("clean install") end, "Install"},
+    i = { "<cmd>lua require('nvterm.terminal').toggle 'float' <cr> mvn clean install <cr> exit <cr>", "Install"},
     s = { function() run_maven_cmd("source:jar install") end, "Source install"},
   },
 }

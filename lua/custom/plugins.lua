@@ -1,4 +1,5 @@
 local overrides = require("custom.configs.overrides")
+local cmp = require "cmp"
 
 ---@type NvPluginSpec[]
 local plugins = {
@@ -74,6 +75,61 @@ local plugins = {
     lazy = true,
     enabled = require("custom.configs.dap").config.active,
   },
+
+  -- Zen mode
+  {
+    "folke/zen-mode.nvim",
+    -- lazy=false,
+  },
+
+
+
+  -- RUST
+  -- install 'rust-src' package for autocompletion to work
+  {
+    "rust-lang/rust.vim",
+    ft = "rust",
+    init = function ()
+      vim.g.rustfmt_autosave = 1
+    end
+  },
+  {
+    "mrcjkb/rustaceanvim",
+    version = "^4",
+    ft = { "rust" },
+    dependencies = "neovim/nvim-lspconfig",
+    config = function()
+      require "custom.configs.rustaceanvim"
+    end
+  },
+  {
+    'saecki/crates.nvim',
+    ft = {"toml"},
+    config = function(_, opts)
+      local crates  = require('crates')
+      crates.setup(opts)
+      require('cmp').setup.buffer({
+        sources = { { name = "crates" }}
+      })
+      crates.show()
+    end,
+  },
+  {
+    "hrsh7th/nvim-cmp",
+    lazy=false,
+    opts = function()
+      local M = require "plugins.configs.cmp"
+      M.completion.completeopt = "menu,menuone,noselect"
+      M.mapping["<CR>"] = cmp.mapping.confirm {
+        behavior = cmp.ConfirmBehavior.Insert,
+        select = false,
+      }
+      table.insert(M.sources, {name = "crates"})
+      return M
+    end,
+  }
+
+
   -- To make a plugin not be loaded
   -- {
   --   "NvChad/nvim-colorizer.lua",

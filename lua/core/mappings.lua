@@ -181,7 +181,7 @@ M.lspconfig = {
       "LSP rename",
     },
 
-    ["<leader>ca"] = {
+    ["<leader>la"] = {
       function()
         vim.lsp.buf.code_action()
       end,
@@ -246,7 +246,7 @@ M.lspconfig = {
   },
 
   v = {
-    ["<leader>ca"] = {
+    ["<leader>la"] = {
       function()
         vim.lsp.buf.code_action()
       end,
@@ -279,10 +279,6 @@ M.telescope = {
     ["<leader>fh"] = { "<cmd> Telescope help_tags <CR>", "Help page" },
     ["<leader>fo"] = { "<cmd> Telescope oldfiles <CR>", "Find oldfiles" },
     ["<leader>fz"] = { "<cmd> Telescope current_buffer_fuzzy_find <CR>", "Find in current buffer" },
-
-    -- git
-    ["<leader>cm"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },
-    ["<leader>gt"] = { "<cmd> Telescope git_status <CR>", "Git status" },
 
     -- pick a hidden term
     ["<leader>pt"] = { "<cmd> Telescope terms <CR>", "Pick hidden term" },

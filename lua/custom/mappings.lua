@@ -49,7 +49,7 @@ M.vopts = {
 
 M.mappings = {
   D = {
-    name = "Debug",
+    name = "[D]ebug",
     b = { "<cmd>lua require'dap'.toggle_breakpoint()<cr>", "Breakpoint" },
     c = { "<cmd>lua require'dap'.continue()<cr>", "Continue (F5)" },
     i = { "<cmd>lua require'dap'.step_into()<cr>", "Into (F7)" },
@@ -74,7 +74,7 @@ M.mappings = {
   },
 
   l = {
-    name = "LSP",
+    name = "[L]SP",
     a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code Action" },
     -- c = { "<cmd>lua require('user.lsp').server_capabilities()<cr>", "Get Capabilities" },
     d = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", "Buffer Diagnostics" },
@@ -94,14 +94,14 @@ M.mappings = {
   },
 
   t = {
-    name = "Tab",
+    name = "[T]ab",
     n = { "<cmd>tabnew %<cr>", "New Tab" },
     c = { "<cmd>tabclose<cr>", "Close Tab" },
     o = { "<cmd>tabonly<cr>", "Only Tab" },
   },
 
   g = {
-    name = "Git",
+    name = "[G]it",
     g = { "<cmd>lua require('nvterm.terminal').toggle 'float' <cr> lazygit && exit <cr>", "Lazygit" },
     j = { "<cmd>lua require 'gitsigns'.next_hunk({navigation_message = false})<cr>", "Next Hunk" },
     k = { "<cmd>lua require 'gitsigns'.prev_hunk({navigation_message = false})<cr>", "Prev Hunk" },
@@ -117,12 +117,17 @@ M.mappings = {
     C = { "<cmd>Telescope git_bcommits<cr>", "Checkout commit(for current file)", },
     d = { "<cmd>Gitsigns diffthis HEAD<cr>", "Git Diff", },
   },
+
+  f = { name = "[F]ind", },
+
+  z = { function() require("zen-mode").toggle() end, "Toggle ZenMode", },
 }
 
-M.setup = function()
-  local which_key = require("which-key")
-  which_key.register(M.mappings, M.opts)
--- which_key.register(vmappings, vopts)
-end
+
+-- M.setup = function()
+--   local which_key = require("which-key")
+--   which_key.register(M.mappings, M.opts)
+-- -- which_key.register(vmappings, vopts)
+-- end
 
 return M

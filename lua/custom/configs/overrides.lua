@@ -13,6 +13,7 @@ M.treesitter = {
     "markdown",
     "markdown_inline",
     "java",
+    "rust",
   },
   indent = {
     enable = true,
@@ -38,6 +39,9 @@ M.mason = {
     -- c/cpp stuff
     "clangd",
     "clang-format",
+
+    -- rust
+    "rust-analyzer",
 
     --java
     "jdtls",
